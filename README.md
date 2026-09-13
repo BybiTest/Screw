@@ -13,14 +13,21 @@
 ### مراحل دریافت خروجی:
 
 1. **پوش کردن پروژه به مخزن گیت‌هاب (Push to GitHub):**
-   ```bash
-   git init
-   git add .
-   git commit -m "انتشار بازی کلمه پیچ نسخه 1.0.0 اثر سیدحمیدموسوی زاده"
-   git branch -M main
-   git remote add origin https://github.com/نام-کاربری-شما/kalame-pich.git
-   git push -u origin main
-   ```
+   - **اگر ریپازیتوری شما ساخته شده است:**
+     ```bash
+     git add .
+     git commit -m "رفع خطای بیلد گریدل و بروزرسانی تپسل"
+     git push origin main
+     ```
+   - **اگر برای بار اول پوش می‌کنید:**
+     ```bash
+     git init
+     git add .
+     git commit -m "انتشار بازی کلمه پیچ نسخه 1.0.0 اثر سیدحمیدموسوی زاده"
+     git branch -M main
+     git remote add origin https://github.com/نام-کاربری-شما/kalame-pich.git
+     git push -u origin main
+     ```
 
 2. **اجرای خودکار بیلد در گیت‌هاب:**
    - با هر بار `push` به شاخه `main` یا `master`، فرآیند بیلد به صورت کاملاً خودکار در گیت‌هاب آغاز می‌شود.

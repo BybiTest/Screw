@@ -1123,7 +1123,13 @@ export default function App() {
                     پروژه را می‌توانید مستقیماً از طریق دستورات زیر در ترمینال یا با دکمه Export گیت‌هاب در منوی تنظیمات بالا به ریپازیتوری خود ارسال نمایید:
                   </p>
                   <pre className="bg-slate-900/90 border border-slate-800 p-3 rounded-xl text-xs text-cyan-300 font-mono overflow-x-auto text-left dir-ltr">
-{`git init
+{`# اگر قبلاً پروژه را پوش کرده‌اید و با خطای Run #2 مواجه شدید، فقط این ۳ دستور را اجرا کنید:
+git add .
+git commit -m "رفع مشکل آرتیفکت تپسل و بروزرسانی گریدل"
+git push origin main
+
+# یا در صورت پوش اولیه:
+git init
 git add .
 git commit -m "انتشار بازی کلمه پیچ نسخه 1.0.0 اثر سیدحمیدموسوی زاده"
 git branch -M main
