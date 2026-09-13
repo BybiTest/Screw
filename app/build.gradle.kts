@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.kalamepich"
@@ -18,16 +18,16 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val tapsellAppKey = System.getenv("TAPSELL_APP_KEY")
-            ?: (project.findProperty("TAPSELL_APP_KEY") as? String)
+        val tapsellAppKey = (System.getenv("TAPSELL_APP_KEY")?.takeIf { it.isNotBlank() })
+            ?: ((project.findProperty("TAPSELL_APP_KEY") as? String)?.takeIf { it.isNotBlank() })
             ?: "acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt"
 
-        val tapsellRewardedZoneId = System.getenv("TAPSELL_REWARDED_ZONE_ID")
-            ?: (project.findProperty("TAPSELL_REWARDED_ZONE_ID") as? String)
+        val tapsellRewardedZoneId = (System.getenv("TAPSELL_REWARDED_ZONE_ID")?.takeIf { it.isNotBlank() })
+            ?: ((project.findProperty("TAPSELL_REWARDED_ZONE_ID") as? String)?.takeIf { it.isNotBlank() })
             ?: "6aa701ba1f07c00619f4519a"
 
-        val tapsellBannerZoneId = System.getenv("TAPSELL_BANNER_ZONE_ID")
-            ?: (project.findProperty("TAPSELL_BANNER_ZONE_ID") as? String)
+        val tapsellBannerZoneId = (System.getenv("TAPSELL_BANNER_ZONE_ID")?.takeIf { it.isNotBlank() })
+            ?: ((project.findProperty("TAPSELL_BANNER_ZONE_ID") as? String)?.takeIf { it.isNotBlank() })
             ?: "6aa70201796a202335abbcde"
 
         buildConfigField("String", "TAPSELL_APP_KEY", "\"$tapsellAppKey\"")
@@ -40,11 +40,14 @@ android {
             val keystoreFile = rootProject.file("release.keystore")
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "bazaar123456"
-                keyAlias = System.getenv("KEY_ALIAS") ?: "bazaarkey"
-                keyPassword = System.getenv("KEY_PASSWORD") ?: "bazaar123456"
+                storePassword = (System.getenv("KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() }) ?: "bazaar123456"
+                keyAlias = (System.getenv("KEY_ALIAS")?.takeIf { it.isNotBlank() }) ?: "bazaarkey"
+                keyPassword = (System.getenv("KEY_PASSWORD")?.takeIf { it.isNotBlank() }) ?: "bazaar123456"
                 enableV1Signing = true
                 enableV2Signing = true
+            } else {
+                // Safe fallback to debug signing if release.keystore is absent
+                initWith(getByName("debug"))
             }
         }
     }
@@ -52,12 +55,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            val releaseSigning = signingConfigs.findByName("release")
-            if (rootProject.file("release.keystore").exists()) {
-                signingConfig = releaseSigning
-            } else {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

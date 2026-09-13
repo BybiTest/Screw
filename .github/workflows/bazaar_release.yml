@@ -45,7 +45,8 @@ jobs:
           if [ -n "${{ secrets.BASE64_KEYSTORE }}" ]; then
             echo "Decoding repository secret keystore..."
             echo "${{ secrets.BASE64_KEYSTORE }}" | base64 -d > release.keystore
-          elif [ ! -f "release.keystore" ]; then
+          fi
+          if [ ! -f "release.keystore" ]; then
             echo "Auto-generating release keystore for zero-config GitHub Actions release..."
             keytool -genkey -v \
               -keystore release.keystore \
@@ -57,10 +58,8 @@ jobs:
               -keypass bazaar123456 \
               -dname "CN=Seyed Hamid Mousavizadeh, OU=KalamePich, O=Developer, L=Tehran, ST=Tehran, C=IR"
           fi
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'bazaar123456' }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'bazaar123456' }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'bazaarkey' }}
+          echo "Keystore ready:"
+          ls -lh release.keystore
 
       - name: 🚀 Make Gradlew Executable
         run: chmod +x gradlew
@@ -68,7 +67,7 @@ jobs:
       - name: 📦 Build Android App Bundle (AAB for Cafe Bazaar)
         if: ${{ inputs.build_type == 'all' || inputs.build_type == 'aab_only' || github.event_name != 'workflow_dispatch' }}
         run: |
-          ./gradlew bundleRelease --stacktrace
+          ./gradlew bundleRelease --stacktrace --no-daemon
         env:
           TAPSELL_APP_KEY: ${{ secrets.TAPSELL_APP_KEY || 'acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt' }}
           TAPSELL_REWARDED_ZONE_ID: ${{ secrets.TAPSELL_REWARDED_ZONE_ID || '6aa701ba1f07c00619f4519a' }}
@@ -80,7 +79,7 @@ jobs:
       - name: 📱 Build Android APK (Direct Install for Phone & Telegram)
         if: ${{ inputs.build_type == 'all' || inputs.build_type == 'apk_only' || github.event_name != 'workflow_dispatch' }}
         run: |
-          ./gradlew assembleRelease --stacktrace
+          ./gradlew assembleRelease --stacktrace --no-daemon
         env:
           TAPSELL_APP_KEY: ${{ secrets.TAPSELL_APP_KEY || 'acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt' }}
           TAPSELL_REWARDED_ZONE_ID: ${{ secrets.TAPSELL_REWARDED_ZONE_ID || '6aa701ba1f07c00619f4519a' }}
