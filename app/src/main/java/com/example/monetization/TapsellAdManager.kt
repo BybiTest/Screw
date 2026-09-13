@@ -96,6 +96,10 @@ class TapsellAdManager private constructor() : AdManager {
         listener?.onAdFailedToLoad("Please use requestRewardedVideoFromActivity(activity, zoneId, listener)")
     }
 
+    override fun requestRewardedVideo(listener: RewardedAdListener?) {
+        requestRewardedVideo(rewardedZoneId, listener)
+    }
+
     fun requestRewardedVideoFromActivity(
         activity: Activity,
         zoneId: String = rewardedZoneId,
@@ -196,6 +200,10 @@ class TapsellAdManager private constructor() : AdManager {
             Log.e(TAG, "Exception showing rewarded video", e)
             listener.onAdShowFailed(e.message ?: "Unknown error")
         }
+    }
+
+    override fun showRewardedVideo(activity: Activity, listener: RewardedAdListener) {
+        showRewardedVideo(activity, rewardedZoneId, listener)
     }
 
     fun requestStandardBanner(

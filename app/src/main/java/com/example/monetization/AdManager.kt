@@ -22,5 +22,7 @@ interface AdManager {
     fun isInitialized(): Boolean
     fun isRewardedAdReady(): Boolean
     fun requestRewardedVideo(zoneId: String, listener: RewardedAdListener?)
+    fun requestRewardedVideo(listener: RewardedAdListener?)
     fun showRewardedVideo(activity: Activity, zoneId: String, listener: RewardedAdListener)
+    fun showRewardedVideo(activity: Activity, listener: RewardedAdListener)
 }
