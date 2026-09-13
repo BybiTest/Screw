@@ -1,11 +1,53 @@
-<div align="center">
+# 🎮 بازی فکری کلمه پیچ (Kalame Pich)
+> **پدیدآورنده و سازنده:** سیدحمیدموسوی زاده  
+> **نسخه انتشاریه:** ۱.۰.۰ (Version Code: 1)  
+> **پلتفرم:** اندروید (کافه‌بازار، مایکت و وب)  
+> **شناسه بسته:** `com.example.kalamepich`
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+---
 
-  <h1>Built with AI Studio</h2>
+## 📦 راهنمای دریافت خودکار خروجی APK و AAB در گیت‌هاب (GitHub Actions)
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+پروژه به صورت ۱۰۰٪ آماده برای سیستم بیلد خودکار گیت‌هاب (GitHub Actions CI/CD) پیکربندی شده است.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+### مراحل دریافت خروجی:
 
-</div>
+1. **پوش کردن پروژه به مخزن گیت‌هاب (Push to GitHub):**
+   ```bash
+   git init
+   git add .
+   git commit -m "انتشار بازی کلمه پیچ نسخه 1.0.0 اثر سیدحمیدموسوی زاده"
+   git branch -M main
+   git remote add origin https://github.com/نام-کاربری-شما/kalame-pich.git
+   git push -u origin main
+   ```
+
+2. **اجرای خودکار بیلد در گیت‌هاب:**
+   - با هر بار `push` به شاخه `main` یا `master`، فرآیند بیلد به صورت کاملاً خودکار در گیت‌هاب آغاز می‌شود.
+   - همچنین می‌توانید از تب **Actions** در گیت‌هاب، گردش‌کار **"Build Android APK and AAB (Kalame Pich)"** را انتخاب کرده و دکمه **"Run workflow"** را بزنید.
+
+3. **دانلود خروجی‌ها از بخش Artifacts:**
+   پس از اتمام بیلد (حدود ۳ الی ۵ دقیقه)، دو فایل در پایین صفحه بیلد در بخش **Artifacts** آماده دانلود خواهند بود:
+   - 📦 **`KalamePich-CafeBazaar-AAB`**: فایل باندل رسمی `.aab` جهت آپلود مستقیم در پنل توسعه‌دهندگان کافه‌بازار و مایکت.
+   - 📱 **`KalamePich-DirectInstall-APK`**: فایل نصبی مستقیم `.apk` جهت نصب روی گوشی موبایل یا انتشار در کانال‌های تلگرام و وبسایت.
+
+---
+
+## 🛠️ مشخصات فنی و یکپارچه‌سازی‌های درون برنامه
+
+| بخش | مشخصه | مقدار |
+| :--- | :--- | :--- |
+| **کلید اپلیکیشن تپسل** | `TAPSELL_APP_KEY` | `acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt` |
+| **شناسه ویدیوی جایزه‌ای** | `TAPSELL_REWARDED_ZONE_ID` | `6aa701ba1f07c00619f4519a` (+۵۰ سکه جایزه) |
+| **شناسه بنر استاندارد** | `TAPSELL_BANNER_ZONE_ID` | `6aa70201796a202335abbcde` (بنر ۳۲۰x۵۰) |
+| **درگاه پرداخت** | Cafe Bazaar Billing | پروتکل رسمی AIDL برای خرید سکه و عضویت VIP |
+| **پایگاه داده** | Room ORM | ذخیره آفلاین مراحل و مشخصات کاربر |
+| **رابط کاربری** | Jetpack Compose | مدرن‌ترین فریم‌ورک UI اندروید با تم تیره و طلایی |
+
+---
+
+## 🔑 امضای دیجیتال (Signing Key)
+گیت‌هاب اکشنز به گونه‌ای طراحی شده است که اگر کلید اختصاصی `release.keystore` را ست نکرده باشید، به صورت خودکار یک کلید معتبر تولید می‌کند تا بیلد هرگز با خطا متوقف نشود. در صورت تمایل به استفاده از کلید شخصی، می‌توانید آن را به صورت Base64 در بخش `Settings > Secrets and variables > Actions` با نام `BASE64_KEYSTORE` قرار دهید.
+
+---
+**حقوق اثر:** کلیه حقوق مادی و معنوی متعلق به **سیدحمیدموسوی زاده** می‌باشد.

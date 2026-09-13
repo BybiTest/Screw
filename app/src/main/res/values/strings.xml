@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">کلمه پیچ</string>
+    <string name="app_creator">سیدحمیدموسوی زاده</string>
+    <string name="app_version">1.0.0</string>
+    <string name="app_description">بازی فکری معمای کلمات و جدول سرگرمی فارسی اثر سیدحمیدموسوی زاده</string>
+    <string name="tapsell_app_key">acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt</string>
+    <string name="tapsell_rewarded_zone_id">6aa701ba1f07c00619f4519a</string>
+    <string name="tapsell_banner_zone_id">6aa70201796a202335abbcde</string>
+</resources>

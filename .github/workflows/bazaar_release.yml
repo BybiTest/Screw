@@ -1,0 +1,144 @@
+name: Build Android APK and AAB (Kalame Pich)
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'نوع خروجی (Build Type)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - aab_only
+          - apk_only
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build KalamePich Release (AAB & APK)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🐘 Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: 🔑 Set up Signing Keystore (Auto-generate if not provided)
+        run: |
+          if [ -n "${{ secrets.BASE64_KEYSTORE }}" ]; then
+            echo "Decoding repository secret keystore..."
+            echo "${{ secrets.BASE64_KEYSTORE }}" | base64 -d > release.keystore
+          elif [ ! -f "release.keystore" ]; then
+            echo "Auto-generating release keystore for zero-config GitHub Actions release..."
+            keytool -genkey -v \
+              -keystore release.keystore \
+              -alias bazaarkey \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass bazaar123456 \
+              -keypass bazaar123456 \
+              -dname "CN=Seyed Hamid Mousavizadeh, OU=KalamePich, O=Developer, L=Tehran, ST=Tehran, C=IR"
+          fi
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'bazaar123456' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'bazaar123456' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'bazaarkey' }}
+
+      - name: 🚀 Make Gradlew Executable
+        run: chmod +x gradlew
+
+      - name: 📦 Build Android App Bundle (AAB for Cafe Bazaar)
+        if: ${{ inputs.build_type == 'all' || inputs.build_type == 'aab_only' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          ./gradlew bundleRelease --stacktrace
+        env:
+          TAPSELL_APP_KEY: ${{ secrets.TAPSELL_APP_KEY || 'acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt' }}
+          TAPSELL_REWARDED_ZONE_ID: ${{ secrets.TAPSELL_REWARDED_ZONE_ID || '6aa701ba1f07c00619f4519a' }}
+          TAPSELL_BANNER_ZONE_ID: ${{ secrets.TAPSELL_BANNER_ZONE_ID || '6aa70201796a202335abbcde' }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'bazaar123456' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'bazaar123456' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'bazaarkey' }}
+
+      - name: 📱 Build Android APK (Direct Install for Phone & Telegram)
+        if: ${{ inputs.build_type == 'all' || inputs.build_type == 'apk_only' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          ./gradlew assembleRelease --stacktrace
+        env:
+          TAPSELL_APP_KEY: ${{ secrets.TAPSELL_APP_KEY || 'acndtrkbtbnoisqghcfnlpmasmpgtmikmgpgrlrbekjdggtfpldqgthcbmjqbsmdbpssnt' }}
+          TAPSELL_REWARDED_ZONE_ID: ${{ secrets.TAPSELL_REWARDED_ZONE_ID || '6aa701ba1f07c00619f4519a' }}
+          TAPSELL_BANNER_ZONE_ID: ${{ secrets.TAPSELL_BANNER_ZONE_ID || '6aa70201796a202335abbcde' }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'bazaar123456' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'bazaar123456' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'bazaarkey' }}
+
+      - name: 🗂️ Organize Release Outputs
+        run: |
+          mkdir -p release-output
+          # Copy AAB if generated
+          find app/build/outputs/bundle -name "*.aab" -exec cp {} release-output/KalamePich-v1.0.0-CafeBazaar.aab \; 2>/dev/null || true
+          # Copy APK if generated
+          find app/build/outputs/apk -name "*release*.apk" -exec cp {} release-output/KalamePich-v1.0.0-Release.apk \; 2>/dev/null || true
+          # List outputs
+          echo "Release outputs generated successfully:"
+          ls -lh release-output/
+
+      - name: 📤 Upload Cafe Bazaar AAB Artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: KalamePich-CafeBazaar-AAB
+          path: release-output/*.aab
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: 📤 Upload Direct-Install APK Artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: KalamePich-DirectInstall-APK
+          path: release-output/*.apk
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: 🎉 Create GitHub Release (On Version Tag Push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-output/KalamePich-v1.0.0-CafeBazaar.aab
+            release-output/KalamePich-v1.0.0-Release.apk
+          name: کلمه پیچ نسخه ۱.۰.۰ | Kalame Pich Release ${{ github.ref_name }}
+          body: |
+            ## 🎮 بازی فکری کلمه پیچ (نسخه ۱.۰.۰)
+            **پدیدآورنده و سازنده:** سیدحمیدموسوی زاده
+
+            ### 📦 فایل‌های خروجی:
+            - **`KalamePich-v1.0.0-CafeBazaar.aab`**: فرمت رسمی App Bundle جهت بارگذاری در پنل توسعه‌دهندگان کافه‌بازار و مایکت
+            - **`KalamePich-v1.0.0-Release.apk`**: فایل نصبی مستقیم جهت تست روی تلفن همراه
+
+            ### 🛠️ مشخصات فنی و سرویس‌ها:
+            - کلید تپسل اختصاصی متصل شده (`acndtrkbtb...`)
+            - شناسه ویدیوی جایزه‌ای تپسل (`6aa701ba1f07c00619f4519a`)
+            - شناسه بنر تپسل (`6aa70201796a202335abbcde`)
+            - درگاه پرداخت درون‌برنامه‌ای کافه‌بازار (AIDL)
+            - پایگاه‌داده محلی Room و رابط کاربری مدرن Jetpack Compose
+          draft: false
+          prerelease: false

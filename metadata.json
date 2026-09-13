@@ -1,0 +1,6 @@
+{
+  "name": "کلمه پیچ",
+  "description": "بازی کلمات و سرگرمی کلمه پیچ اثر سیدحمیدموسوی زاده (نسخه ۱.۰.۰) به همراه شبیه‌ساز گیم‌پلی، تنظیمات تبلیغات تپسل و سیستم پرداخت درون‌برنامه‌ای کافه‌بازار",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
