@@ -1,0 +1,57 @@
+name: Generate Bazaar BIN
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-bin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build Release AAB
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          chmod 600 release.keystore
+
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/release.keystore" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="bazaarkey" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+      - name: Download Bundle Signer
+        run: |
+          wget -O bundlesigner.jar https://github.com/cafebazaar/bundle-signer/releases/download/v0.1.4/bundlesigner-0.1.4.jar
+
+      - name: Generate BIN
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          mkdir -p bin_output
+          java -jar bundlesigner.jar genbin \
+            --bundle app/build/outputs/bundle/release/app-release.aab \
+            --bin bin_output \
+            --v2-signing-enabled true \
+            --v3-signing-enabled false \
+            --ks release.keystore
+
+      - name: Upload Bazaar files
+        uses: actions/upload-artifact@v4
+        with:
+          name: KalamePich-Bazaar-Release
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            bin_output/**
