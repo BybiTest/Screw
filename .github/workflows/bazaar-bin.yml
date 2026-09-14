@@ -34,7 +34,7 @@ jobs:
 
       - name: Download Bundle Signer
         run: |
-          wget -O bundlesigner.jar https://github.com/cafebazaar/bundle-signer/releases/download/v0.1.4/bundlesigner-0.1.4.jar
+          wget -O bundlesigner.jar https://github.com/cafebazaar/bundle-signer/releases/download/v0.1.13/bundlesigner-0.1.13.jar
 
       - name: Generate BIN
         env:
