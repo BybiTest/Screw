@@ -23,7 +23,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          echo "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > release.keystore
           chmod 600 release.keystore
 
           ./gradlew bundleRelease \
@@ -39,6 +39,7 @@ jobs:
       - name: Generate BIN
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           mkdir -p bin_output
           java -jar bundlesigner.jar genbin \
@@ -46,7 +47,10 @@ jobs:
             --bin bin_output \
             --v2-signing-enabled true \
             --v3-signing-enabled false \
-            --ks release.keystore
+            --ks release.keystore \
+            --ks-pass "env:KEYSTORE_PASSWORD" \
+            --ks-key-alias "bazaarkey" \
+            --key-pass "env:KEY_PASSWORD"
 
       - name: Upload Bazaar files
         uses: actions/upload-artifact@v4
